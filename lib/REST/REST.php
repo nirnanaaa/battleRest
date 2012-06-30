@@ -1,24 +1,57 @@
 <?php
 
-require dirname(__FILE__) . '/modules/character.php';
-require dirname(__FILE__) . '/modules/item.php';
 require dirname(__FILE__) . '/exception/REST_exception.php';
 
 class REST {
 
     protected $_options;
-    protected $_ssl = false;
+    protected $_region = "eu"; //$this->_options['region'] will override this!
+    protected $_sslSupport = false;
+    protected $_apcCaching = false;
+    protected $_sqlCaching = false; //NYI
+
+    /* protected $_memCaching = false;
+      protected $_memCachedServer = "";
+      protected $_memCachedPort = "";
+     */
 
     public function __construct() {
+
         $this->paramsSet();
+        $this->initRest();
     }
 
     private function paramsSet() {
         if (!isset($this->_options['region'])) {
-            $this->_options['region'] = 'eu';
+            $this->_options['region'] = $this->_region;
         }
         if (!isset($this->_options['sslSupport'])) {
-            $this->_options['sslSupport'] = false;
+            $this->_options['sslSupport'] = $this->_sslSupport;
+        }
+        if (!isset($this->_options['apcCaching'])) {
+            $this->_options['apcCaching'] = $this->_apcCaching;
+        }
+    }
+
+    public function initREST() {
+        $this->registerModule('character');
+        $this->registerModule('item');
+        if ($this->_options['apcCaching'] == true) {
+            $this->registerModule('apc');
+        }
+        if ($this->_options['memCached'] == true) {
+            $this->registerModule('memcached');
+        }
+        if ($this->_options['sqlCache'] == true) {
+            //NYI
+        }
+    }
+
+    private function registerModule($module) {
+        if (!file_exists(dirname(__FILE__) . '/modules/' . $module . '.php')) {
+            throw new BattleRestException("Failed to load Module " . $module);
+        } else {
+            require_once dirname(__FILE__) . '/modules/' . $module . '.php';
         }
     }
 
@@ -27,10 +60,6 @@ class REST {
     }
 
     private function getData() {
-        
-    }
-
-    public function initREST() {
         
     }
 
@@ -60,7 +89,6 @@ class REST {
                 $baseUrl = $this->generateUrl('character', 'Blackrock', $filteredCharacter[0]);
                 unset($filteredCharacter);
                 return Character::getCharacterImage($baseUrl, $this->_options['region']);
-                
             }
             $baseUrl = $this->generateUrl('character', 'Blackrock', $this->_options['setCharacter']);
             return Character::getCharacter($baseUrl, $fields);
@@ -79,7 +107,8 @@ class REST {
 }
 
 $cla = new REST();
+$cla->realm = 'blackrock';
 $cla->character = 'mosny IMAGE';
 echo '<pre>';
-print_r('<img src="'.$cla->character.'" />');
+print_r('<img src="' . $cla->character . '" />');
 echo '</pre>';
