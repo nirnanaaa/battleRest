@@ -69,29 +69,29 @@ class REST {
         $subquery = explode(" ", $query);
         $this->_options['setCharacterName'] = $subquery[1];
         if (preg_match("/fields/i", strtolower($subquery[4]))) {
-            return Character::getCharacter($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), $subquery[5]);
+            return Character::getCharacter($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), $subquery[5]); //
         } elseif (preg_match("/image/i", strtolower($subquery[4]))) {
-            return Character::getCharacterImage($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), $this->_options['region']);
+            return Character::getCharacterImage($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), $this->_options['region']); //
         } elseif (preg_match("/stats/i", strtolower($subquery[4]))) {
-            return Character::getCharacterStats($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterStats($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName'])); //
         } elseif (preg_match("/spec/i", strtolower($subquery[4]))) {
-            return Character::getCharacterSpec($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterSpec($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName'])); //
         } elseif (preg_match("/build/i", strtolower($subquery[4]))) {
-            return Character::getCharacterBuild($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), $subquery[5]);
+            return Character::getCharacterBuild($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), $subquery[5]); //
         } elseif (preg_match("/guild/i", strtolower($subquery[4]))) {
-            return Character::getCharacterGuild($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterGuild($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName'])); //
         } elseif (preg_match("/feed/i", strtolower($subquery[4]))) {
-            return Character::getCharacterFeed($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterFeed($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), ($subquery[5] == "formatted") ? true : false); //
         } elseif (preg_match("/reputation/i", strtolower($subquery[4]))) {
-            return Character::getCharacterReputation($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterReputation($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));//
         } elseif (preg_match("/titles/i", strtolower($subquery[4]))) {
-            return Character::getCharacterTitles($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterTitles($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));//
         } elseif (preg_match("/items/i", strtolower($subquery[4]))) {
-            return Character::getCharacterItems($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterItems($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName'])); //
         } elseif (preg_match("/professions/i", strtolower($subquery[4]))) {
             return Character::getCharacterProfessions($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
         } elseif (preg_match("/appearance/i", strtolower($subquery[4]))) {
-            return Character::getCharacterAppearance($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
+            return Character::getCharacterAppearance($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));//
         } elseif (preg_match("/companions/i", strtolower($subquery[4]))) {
             return Character::getCharacterCompanions($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']));
         } elseif (preg_match("/mounts/i", strtolower($subquery[4]))) {
@@ -155,8 +155,7 @@ class REST {
 
 $cla = new REST();
 $cla->realm = 'blackrock';
-$cla->query = 'CHARACTER mosny FROM blackrock ITEMS';
+$cla->query = 'CHARACTER mosny FROM blackrock REPUTATION';
 echo '<pre>';
 print_r($cla->query);
-//print_r('<img src="' . $cla->character . '" />');
 echo '</pre>';

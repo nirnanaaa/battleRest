@@ -29,9 +29,38 @@ class Character {
         return self::getCharacter($baseUrl, "guild")->guild;
     }
 
+    public static function getCharacterFeed($baseUrl, $formatted) {
+        $characterfeed = self::getCharacter($baseUrl, "feed")->feed;
+        if ($formatted) {
+            foreach ($characterfeed as $feed) {
+                $formattedString .= date("r", substr($feed->timestamp, 0, strlen($feed->timestamp) - 3));
+                if ($feed->type == "BOSSKILL" || $feed->type == "ACHIEVEMENT") {
+                    $formattedString .= "  " . $feed->achievement->title;
+                } else if ($feed->type == LOOT) {
+                    $formattedString .= "  " . $feed->itemId;
+                }
+                $formattedString .= "\n";
+            }
+            return $formattedString;
+        }
+        else
+            return $characterfeed;
+    }
 
     public static function getCharacterSpec($baseUrl) {
         return self::getCharacter($baseUrl, "talents")->talents;
+    }
+
+    public static function getCharacterReputation($baseUrl) {
+        return self::getCharacter($baseUrl, "reputation")->reputation;
+    }
+
+    public static function getCharacterAppearance($baseUrl) {
+        return self::getCharacter($baseUrl, "appearance")->appearance;
+    }
+
+    public static function getCharacterTitles($baseUrl) {
+        return self::getCharacter($baseUrl, "titles")->titles;
     }
 
     public static function getCharacterBuild($baseUrl, $type) {
