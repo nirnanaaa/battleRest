@@ -4,6 +4,7 @@ Parsing Data from the Blizzard API
 
 ===
 USAGE:
+---
 <?php
 
 require 'PATH TO FILES/rest.php';
@@ -16,6 +17,7 @@ echo $battleRest->query;
 
 ---
 Configuration Extras(optional):
+---
 
 $battleRest->sslSupport = true;
 
