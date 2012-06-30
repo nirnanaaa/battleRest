@@ -63,6 +63,31 @@ class Character {
         return self::getCharacter($baseUrl, "titles")->titles;
     }
 
+    public static function getCharacterProfessions($baseUrl) {
+        return self::getCharacter($baseUrl, "professions")->professions;
+    }
+
+    public static function getCharacterPvp($baseUrl) {
+        return self::getCharacter($baseUrl, "pvp")->pvp;
+    }
+
+    public static function getCharacterQuests($baseUrl) {
+        return self::getCharacter($baseUrl, "quests")->quests;
+    }
+
+    public static function getCharacterAchievements($baseUrl) {
+        return self::getCharacter($baseUrl, "achievements")->achievements;
+    }
+
+    public static function getCharacterCompanions($baseUrl) {
+        return self::getCharacter($baseUrl, "companions")->companions;
+    }
+    public static function getCharacterMounts($baseUrl) {
+        return self::getCharacter($baseUrl, "mounts")->mounts;
+    }
+    public static function getCharacterPets($baseUrl) {
+        return self::getCharacter($baseUrl, "pets")->pets;
+    }
     public static function getCharacterBuild($baseUrl, $type) {
 
         $treearray = self::getCharacter($baseUrl, "talents")->talents[($type == "main") ? 0 : 1]->trees;
