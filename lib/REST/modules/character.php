@@ -25,6 +25,11 @@ class Character {
         return self::getCharacter($baseUrl, "items")->items;
     }
 
+    public static function getCharacterGuild($baseUrl) {
+        return self::getCharacter($baseUrl, "guild")->guild;
+    }
+
+
     public static function getCharacterSpec($baseUrl) {
         return self::getCharacter($baseUrl, "talents")->talents;
     }
