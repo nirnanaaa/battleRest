@@ -1,7 +1,7 @@
 <?php
 
 /**
- * REST API Parser Class
+ * REST API Parser
  *
  * LICENSE
  *
@@ -16,17 +16,17 @@
  * You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
  * 
  *
- * @namespace  REST
- * @package    BattleREST
+ * @category   BattleREST
+ * @package    REST
  * @copyright  Copyright (c) 2010-2012 Florian Kasper (http://khnetworks.com)
  * @license    http://www.gnu.org/licenses/     GPL
- * @version    $Id: REST.php 2012-07-03 17:25:24Z flo $
+ * @version    $Id: REST.php 2012-07-03 21:58:21GMT-0200 flo $
  */
 /**
  * Library for Parsing data from Blizzards RESTful API
  *
- * @category   REST
- * @package    BattleRest
+ * @category   BattleREST
+ * @package    REST
  * @copyright  Copyright (c) 2010-2012 Florian Kasper (http://khnetworks.com)
  * @license    http://www.gnu.org/licenses/     GPL
  */
@@ -174,11 +174,11 @@ class REST {
         $useableObjects = array('fields', 'image', 'stats', 'spec', 'build', 'guild', 'feed', 'spec', 'reputation', 'appearance', 'titles', 'professions', 'pvp', 'quests', 'achievement', 'companions', 'mounts', 'build');
         foreach ($useableObjects as $fields) {
             if (preg_match('/' . $fields . '/i', strtolower($subquery[4]))) {
-                        return $this->_module['process']->processIncomingData($subquery[0].$subquery[1],$this->_module['character']->$fields($URL, ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null)));
-                    }
-
+                return $this->_module['process']->processIncomingData($subquery[0] . $subquery[1], $this->_module['character']->$fields($URL, ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null)));
             }
         }
+    }
+
     private function itemAction() {
         $this->registerModule('item');
         $subquery = $this->explodeQuery();
@@ -193,21 +193,11 @@ class REST {
         
     }
 
-    private function realmAction($query) {
+    private function realmAction() {
         $this->registerModule('realm');
-        $subquery = explode(" ", $query);
-        if ($this->_apcCaching) {
-            if (apc_exists($subquery[1] . "status")) {
-                $returnString = apc_fetch($subquery[1] . "status");
-                return $returnString;
-            } else {
-                $returnString = $this->_module['realm']->status($this->_module, $this->_options['region'], $subquery[1]);
-                apc_store($subquery[1] . "status", $returnString, 600);
-                return $returnString;
-            }
-        } else {
-            return $this->_module['realm']->status($this->_module, $this->_options['region'], $subquery[1]);
-        }
+        $subquery = $this->explodeQuery();
+
+        return $this->_module['process']->processIncomingData($subquery[0] . $subquery[1], $this->_module['realm']->status($this->_options['region'], $subquery[1]));
     }
 
     private function queryAction() {
@@ -247,7 +237,7 @@ class REST {
 }
 
 $cla = new REST();
-$cla->query = 'ITEM 50000';
+$cla->query = 'SERVER Blackrock';
 echo '<pre>';
 print_r($cla->query);
 echo '</pre>';

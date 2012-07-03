@@ -13,7 +13,7 @@ class kernel {
              * Would you like to authenticate against the API?
              * @var boolean
              */
-            "authentication" => true,
+            "authentication" => false,
             /**
              * If you want enter here your API keys
              * @var string

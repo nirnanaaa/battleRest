@@ -11,7 +11,6 @@ class request {
         if (!function_exists('curl_init')) {
             return file_get_contents($url);
         } else {
-print_r(auth::generateAuthHeader($url));
             $errno = CURLE_OK;
             $error = '';
             $ch = curl_init($url);
