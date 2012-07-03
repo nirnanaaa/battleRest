@@ -41,7 +41,7 @@ class item {
      */
     public static function getItem($baseUrl) {
         $characterContent = request::curlRequest($baseUrl);
-        return json_decode($characterContent);
+        return $baseUrl,json_decode($characterContent);
     }
 
 }

@@ -167,7 +167,7 @@ class REST {
      * @return string
      * @todo return states and caching seperation
      */
-    private function localCharAction() {
+    private function character() {
         $this->registerModule('character');
         $subquery = $this->explodeQuery();
         $this->_options['setCharacterName'] = $subquery[1];
@@ -179,38 +179,33 @@ class REST {
         }
     }
 
-    private function itemAction() {
+    private function item() {
         $this->registerModule('item');
         $subquery = $this->explodeQuery();
         return $this->_module['process']->processIncomingData($subquery[1], $this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]));
     }
 
-    private function achievementAction() {
+    private function achievement() {
         
     }
 
-    private function guildAction() {
+    private function guild() {
         
     }
 
-    private function realmAction() {
+    private function realm() {
         $this->registerModule('realm');
         $subquery = $this->explodeQuery();
-
-        return $this->_module['process']->processIncomingData($subquery[0] . $subquery[1], $this->_module['realm']->status($this->_options['region'], $subquery[1]));
+        return $this->_module['realm']->status($this->_options['region'], $subquery[1]);
     }
 
     private function queryAction() {
         $subquery = $this->explodeQuery();
-        if (preg_match("/character/i", strtolower($subquery[0]))) {
-            $this->_options['realm'] = $subquery[3];
-            return $this->localCharAction();
-        } else if (preg_match("/guild/i", strtolower($subquery[0]))) {
-            return $this->guildAction();
-        } else if (preg_match("/item/i", strtolower($subquery[0]))) {
-            return $this->itemAction();
-        } else if (preg_match("/server/i", strtolower($subquery[0]))) {
-            return $this->realmAction();
+        $Actions = array("character", "guild", "item", "realm");
+        foreach ($Actions as $singleAction) {
+            if (preg_match("/" . $singleAction . "/i", strtolower($subquery[0]))) {
+                return $this->$singleAction();
+            }
         }
     }
 
@@ -237,7 +232,7 @@ class REST {
 }
 
 $cla = new REST();
-$cla->query = 'SERVER Blackrock';
+$cla->query = 'realm Blackrock';
 echo '<pre>';
 print_r($cla->query);
 echo '</pre>';

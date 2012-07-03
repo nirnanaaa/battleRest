@@ -6,9 +6,8 @@ class request {
         
     }
 
-    public static function curlRequest($url) {
-
-        if (!function_exists('curl_init')) {
+    public static function uncachedRequest($url) {
+        if (!function_exists('curl_init') || !kernel::Configuration("curlSupport")) {
             return file_get_contents($url);
         } else {
             $errno = CURLE_OK;
@@ -33,12 +32,25 @@ class request {
             $error = curl_error($ch);
 
             curl_close($ch);
-
             if ($errno) {
                 return false;
             } else {
                 return $response;
             }
+        }
+    }
+
+    public static function curlRequest($url) {
+
+
+        if (kernel::Configuration("apcSupport") || kernel::Configuration("memcachedSupport")) {
+            if (process::check($url)) {
+                return process::fetch($url);
+            } else {
+                return process::store($url, self::uncachedRequest($url));
+            }
+        }else{
+            return self::uncachedRequest($url);
         }
     }
 

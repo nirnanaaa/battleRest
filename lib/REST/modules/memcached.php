@@ -6,6 +6,7 @@ class memcached {
         $mCache = new MemCache();
         $mCache->addServer(new MemCacheServer(kernel::Configuration("memcachedServer"), kernel::Configuration("memcachedPort")));
         return $mCache;
+        
     }
 
     public static function set($key, $value) {
