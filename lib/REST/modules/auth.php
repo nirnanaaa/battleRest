@@ -10,7 +10,7 @@ class auth {
      * @return string
      */
     public static function generateAuthHeader($request) {
-        return "Authorization: BNET " . kernel::Configuration("authenticationPublicKey") . self::signData($request);
+        return "Authorization: BNET " . kernel::Configuration("authenticationPublicKey") .":". self::signData($request);
     }
 
     /**
@@ -22,7 +22,7 @@ class auth {
     public static function signData($url) {
         //http://us.battle.net/api/wow/realm/status
         $url = substr($url, 20);
-        return base64_encode(hash_hmac('sha1', kernel::Configuration("authenticationPrivateKey"), self::stringToSign($url)));
+        return base64_encode(hash_hmac('sha1', utf8_encode(kernel::Configuration("authenticationPrivateKey")), self::stringToSign($url)));
     }
     /**
      * Gernerates the GET request with timestamp and path

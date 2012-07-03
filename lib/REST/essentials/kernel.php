@@ -15,7 +15,7 @@ class kernel {
              */
             "authentication" => true,
             /**
-             * If you want enter here your API key
+             * If you want enter here your API keys
              * @var string
              */
             "authenticationPrivateKey" => "test",
