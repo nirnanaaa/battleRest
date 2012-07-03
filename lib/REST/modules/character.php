@@ -1,94 +1,79 @@
 <?php
 
-class Character {
-
+class character{
     public static function getCharacter($baseUrl, $fields = null) {
         if ($fields != null) {
             $baseUrl .= '?fields=' . $fields;
         }
-        $characterContent = @file_get_contents($baseUrl);
+        $characterContent = request::curlRequest($baseUrl);
         return json_decode($characterContent);
     }
 
-    public static function getCharacterImage($baseUrl, $region) {
+    public function image($baseUrl, $region) {
         $things = self::getCharacter($baseUrl);
         $imageloc = 'http://' . $region . '.battle.net/static-render/' . $region . '/';
         $imageloc .= $things->thumbnail;
         return $imageloc;
     }
 
-    public static function getCharacterStats($baseUrl) {
+    public function stats($baseUrl) {
         return self::getCharacter($baseUrl, "stats")->stats;
     }
 
-    public static function getCharacterItems($baseUrl) {
+    public function items($baseUrl) {
         return self::getCharacter($baseUrl, "items")->items;
     }
 
-    public static function getCharacterGuild($baseUrl) {
+    public function guild($baseUrl) {
         return self::getCharacter($baseUrl, "guild")->guild;
     }
 
-    public static function getCharacterFeed($baseUrl, $formatted) {
+    public function feed($baseUrl) {
         $characterfeed = self::getCharacter($baseUrl, "feed")->feed;
-        if ($formatted) {
-            foreach ($characterfeed as $feed) {
-                $formattedString .= date("r", substr($feed->timestamp, 0, strlen($feed->timestamp) - 3));
-                if ($feed->type == "BOSSKILL" || $feed->type == "ACHIEVEMENT") {
-                    $formattedString .= "  " . $feed->achievement->title;
-                } else if ($feed->type == LOOT) {
-                    $formattedString .= "  " . $feed->itemId;
-                }
-                $formattedString .= "\n";
-            }
-            return $formattedString;
-        }
-        else
-            return $characterfeed;
+        return $characterfeed;
     }
 
-    public static function getCharacterSpec($baseUrl) {
+    public function spec($baseUrl) {
         return self::getCharacter($baseUrl, "talents")->talents;
     }
 
-    public static function getCharacterReputation($baseUrl) {
+    public function reputation($baseUrl) {
         return self::getCharacter($baseUrl, "reputation")->reputation;
     }
 
-    public static function getCharacterAppearance($baseUrl) {
+    public function appearance($baseUrl) {
         return self::getCharacter($baseUrl, "appearance")->appearance;
     }
 
-    public static function getCharacterTitles($baseUrl) {
+    public function titles($baseUrl) {
         return self::getCharacter($baseUrl, "titles")->titles;
     }
 
-    public static function getCharacterProfessions($baseUrl) {
+    public function professions($baseUrl) {
         return self::getCharacter($baseUrl, "professions")->professions;
     }
 
-    public static function getCharacterPvp($baseUrl) {
+    public function pvp($baseUrl) {
         return self::getCharacter($baseUrl, "pvp")->pvp;
     }
 
-    public static function getCharacterQuests($baseUrl) {
+    public function quests($baseUrl) {
         return self::getCharacter($baseUrl, "quests")->quests;
     }
 
-    public static function getCharacterAchievements($baseUrl) {
+    public function achievements($baseUrl) {
         return self::getCharacter($baseUrl, "achievements")->achievements;
     }
 
-    public static function getCharacterCompanions($baseUrl) {
+    public function companions($baseUrl) {
         return self::getCharacter($baseUrl, "companions")->companions;
     }
-    public static function getCharacterMounts($baseUrl) {
+
+    public function mounts($baseUrl) {
         return self::getCharacter($baseUrl, "mounts")->mounts;
     }
-    public static function getCharacterPets($baseUrl) {
-        return self::getCharacter($baseUrl, "pets")->pets;
-    }
-    public static function getCharacterBuild($baseUrl, $type) {
+
+    public function build($baseUrl, $type) {
 
         $treearray = self::getCharacter($baseUrl, "talents")->talents[($type == "main") ? 0 : 1]->trees;
         $build = $treearray[0]->total . '/' . $treearray[1]->total . '/' . $treearray[2]->total;

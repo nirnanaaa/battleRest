@@ -1,6 +1,6 @@
 <?php
 
-class Auth {
+class auth {
 
     private function authenticateUser() {
         
