@@ -174,31 +174,63 @@ class REST {
         $useableObjects = array('fields', 'image', 'stats', 'spec', 'build', 'guild', 'feed', 'spec', 'reputation', 'appearance', 'titles', 'professions', 'pvp', 'quests', 'achievement', 'companions', 'mounts', 'build');
         foreach ($useableObjects as $fields) {
             if (preg_match('/' . $fields . '/i', strtolower($subquery[4]))) {
-                return $this->_module['process']->processIncomingData($subquery[0] . $subquery[1], $this->_module['character']->$fields($URL, ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null)));
+                return $this->_module['character']->$fields($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null));
             }
         }
     }
 
+    /**
+     * Performs an ItemAPI request
+     *
+     * Returns the item array
+     * @return array
+     * @todo ajax tooltip
+     */
     private function item() {
         $this->registerModule('item');
         $subquery = $this->explodeQuery();
-        return $this->_module['process']->processIncomingData($subquery[1], $this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]));
+        return $this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]);
     }
 
+    /**
+     * Performs an AchievementAPI request
+     *
+     * Returns achievement Informations
+     * @return array
+     * @todo ALL| NOT TO MUCH API REQUESTS ( 1700 AV's < 3000 REQUESTS)
+     */
     private function achievement() {
         
     }
 
+    /**
+     * Performs an GuildAPI request
+     *
+     * Returns Guild information such as roster etc.
+     * @return array
+     * @todo links to member? ALL
+     */
     private function guild() {
         
     }
 
+    /**
+     * Performs an RealmStatusAPI request
+     *
+     * Online or offline
+     * @return array
+     * @todo realm informations
+     */
     private function realm() {
         $this->registerModule('realm');
         $subquery = $this->explodeQuery();
         return $this->_module['realm']->status($this->_options['region'], $subquery[1]);
     }
-
+    /**
+     * Query's the users set
+     *
+     * @return mixed
+     */
     private function queryAction() {
         $subquery = $this->explodeQuery();
         $Actions = array("character", "guild", "item", "realm");
@@ -217,12 +249,10 @@ class REST {
         $this->requestParamsSet();
         if ($key === "query") {
             return $this->queryAction();
+        }else{
+           return null; 
         }
-
-        if (isset($this->_options[$key])) {
-            return $this->_options[$key];
-        }
-        return null;
+        
     }
 
     public function __isset($key) {
@@ -232,7 +262,7 @@ class REST {
 }
 
 $cla = new REST();
-$cla->query = 'realm Blackrock';
+$cla->query = 'CHARACTER mosny FROM Blackrock IMAGE';
 echo '<pre>';
 print_r($cla->query);
 echo '</pre>';
