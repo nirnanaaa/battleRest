@@ -13,12 +13,13 @@ class kernel {
              * Would you like to authenticate against the API?
              * @var boolean
              */
-            "authentication" => false,
+            "authentication" => true,
             /**
              * If you want enter here your API key
              * @var string
              */
-            "authenticationToken" => "",
+            "authenticationPrivateKey" => "test",
+            "authenticationPublicKey" => "test",
             /**
              * the standard region will be used if region isn't set
              * @var string
@@ -44,13 +45,17 @@ class kernel {
              * @var boolean
              */
             "curlSupport" => true,
+             /**
+             * The Time objects beeing stored
+             * @var int
+             */
+            "cacheSaveTime" => 7200,
             /**
              * Do you want apc support?
              * @var boolean
              */
             "apcSupport" => true,
             
-            "apcCachingTime" => 7200,
             /**
              * do you want memcached support?
              * @var boolean

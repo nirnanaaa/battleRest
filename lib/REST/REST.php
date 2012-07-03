@@ -30,7 +30,6 @@
  * @copyright  Copyright (c) 2010-2012 Florian Kasper (http://khnetworks.com)
  * @license    http://www.gnu.org/licenses/     GPL
  */
-
 require dirname(__FILE__) . '/exception/REST_exception.php';
 require dirname(__FILE__) . '/essentials/kernel.php';
 
@@ -57,7 +56,7 @@ class REST {
      */
     public function __construct() {
 
-        $this->initRest();
+        $this->initBasics();
     }
 
     /**
@@ -67,14 +66,17 @@ class REST {
      *
      * @return void
      */
-    public function initREST() {
+    private function initBasics() {
         $this->registerModule('request');
         $this->registerModule('process');
+    }
+
+    private function dynamicModules() {
         if ($this->_options['memCached'] == true) {
             $this->registerModule('memcached');
         }
-        if ($this->_options['apcCaching'] == true) {
-            $this->registerModule('apc');
+        if ($this->_options['memCaching'] == true) {
+            $this->registerModule('memcached');
         }
         if ($this->_options['sqlCache'] == true) {
             //NYI
@@ -103,8 +105,6 @@ class REST {
         }
     }
 
-
-
     /**
      * Sets the parameters after calling the getter
      *
@@ -122,9 +122,13 @@ class REST {
         if (!isset($this->_options['apcCaching'])) {
             $this->_options['apcCaching'] = kernel::Configuration("apcSupport");
         }
+        if (!isset($this->_options['memCaching'])) {
+            $this->_options['memCaching'] = kernel::Configuration("memcachedSupport");
+        }
         if (!isset($this->_options['softfail'])) {
             $this->_options['softfail'] = kernel::Configuration("softfail");
         }
+        $this->dynamicModules();
     }
 
     /**
@@ -165,47 +169,20 @@ class REST {
      */
     private function localCharAction() {
         $this->registerModule('character');
-
         $subquery = $this->explodeQuery();
         $this->_options['setCharacterName'] = $subquery[1];
         $useableObjects = array('fields', 'image', 'stats', 'spec', 'build', 'guild', 'feed', 'spec', 'reputation', 'appearance', 'titles', 'professions', 'pvp', 'quests', 'achievement', 'companions', 'mounts', 'build');
         foreach ($useableObjects as $fields) {
             if (preg_match('/' . $fields . '/i', strtolower($subquery[4]))) {
-
-                if ($this->_apcCaching) {
-                    $URL = $this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']);
-                    if (apc_exists($URL)) {
-                        $returnString = apc_fetch($URL);
-                        return $returnString;
-                    } else {
-                        $returnString = $this->_module['character']->$fields($URL, ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null));
-                        apc_store($URL, $returnString);
-                        return $returnString;
+                        return $this->_module['process']->processIncomingData($subquery[0].$subquery[1],$this->_module['character']->$fields($URL, ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null)));
                     }
-                } else {
-                    return $this->_module['character']->$fields($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null));
-                }
+
             }
         }
-    }
-
     private function itemAction() {
         $this->registerModule('item');
         $subquery = $this->explodeQuery();
-        return $this->_module['process']->processIncomingData($subquery[1],$this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]));
-        
-        if ($this->_apcCaching) {
-            if (apc_exists($subquery[1] . "item")) {
-                $returnString = apc_fetch($subquery[1] . "item");
-                return $returnString;
-            } else {
-                $returnString = $this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]);
-                apc_store($subquery[1] . "item", $returnString, 600);
-                return $returnString;
-            }
-        } else {
-            return $this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]);
-        }
+        return $this->_module['process']->processIncomingData($subquery[1], $this->_module['item']->getItem((($this->_options['sslSupport']) ? 'https' : 'http') . '://' . $this->_options['region'] . ".battle.net/api/wow/item/" . $subquery[1]));
     }
 
     private function achievementAction() {
