@@ -139,7 +139,7 @@ class REST {
      * @param string $query
      * @return string|vector
      */
-    private function explodeQuery() {
+    private function explodeQuery($full = false) {
         return explode(" ", $this->_options['query']);
     }
 
@@ -171,10 +171,10 @@ class REST {
         $this->registerModule('character');
         $subquery = $this->explodeQuery();
         $this->_options['setCharacterName'] = $subquery[1];
-        $useableObjects = array('fields', 'image', 'stats', 'spec', 'build', 'guild', 'feed', 'spec', 'reputation', 'appearance', 'titles', 'professions', 'pvp', 'quests', 'achievement', 'companions', 'mounts', 'build');
+        $useableObjects = array('fields', 'image', 'stats', 'spec', 'build', 'guild', 'feed', 'spec', 'reputation', 'appearance', 'titles', 'professions', 'pvp', 'quests', 'achievement', 'companions', 'mounts', 'build', 'items');
         foreach ($useableObjects as $fields) {
             if (preg_match('/' . $fields . '/i', strtolower($subquery[4]))) {
-                return $this->_module['character']->$fields($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : null));
+                return $this->_module['character']->$fields($this->generateUrl('character', $subquery[3], $this->_options['setCharacterName']), ($fields == 'image') ? $this->_options['region'] : (($fields == "build") ? $subquery[5] : ($fields == "items" && isset($subquery[5])) ? $subquery[5] : null), $this->_options['tooltips']);
             }
         }
     }
@@ -211,7 +211,18 @@ class REST {
      * @todo links to member? ALL
      */
     private function guild() {
-        
+        $this->registerModule('guild');
+        $subquery = $this->explodeQuery();
+        $this->_options['setCharacterName'] = $subquery[1];
+        $useableObjects = array('members', 'achievement', 'news');
+        foreach ($useableObjects as $fields) {
+            if (preg_match('/' . $fields . '/i', strtolower($subquery[4]))) {//GUILD[0] BLABLABLA[1] FROM[2] REALM[3] options[4]
+                if (preg_match('/\+/i', strtolower($subquery[1]))) {
+                    $guildName = str_replace("+", "%20", $subquery[1]);
+                }
+                return $this->_module['guild']->$fields($this->generateUrl('guild', $subquery[3], $guildName));
+            }
+        }
     }
 
     /**
@@ -226,6 +237,20 @@ class REST {
         $subquery = $this->explodeQuery();
         return $this->_module['realm']->status($this->_options['region'], $subquery[1]);
     }
+
+    private function extras($extras) {
+        $subquery = explode(" ", $extras);
+        $Actions = array("tooltips", "jquery");
+        foreach($subquery as $link){
+           if (preg_match("/(" . $Actions[0] . "|" . $Actions[1] . ")/i", strtolower($link))) {
+                $returnstring = kernel::$link();
+            }  
+            
+        }
+        return $returnstring;
+        
+    }
+
     /**
      * Query's the users set
      *
@@ -241,28 +266,44 @@ class REST {
         }
     }
 
+    /**
+     * Sets user variables
+     *
+     * @return void
+     */
     public function __set($key, $value) {
         $this->_options[$key] = $value;
     }
 
+    /**
+     * Returns values from the class
+     *
+     * @return mixed
+     */
     public function __get($key) {
         $this->requestParamsSet();
         if ($key === "query") {
             return $this->queryAction();
-        }else{
-           return null; 
+        } elseif ($key === "extras") {
+            return $this->extras($this->_options['extras']);
+        } else {
+            return null;
         }
-        
     }
 
+    /**
+     * Checks if class variable isset
+     *
+     * @return boolean
+     */
     public function __isset($key) {
         return(isset($this->_options[$key]));
     }
 
 }
-
+//tests
 $cla = new REST();
-$cla->query = 'CHARACTER mosny FROM Blackrock IMAGE';
+$cla->query = 'CHARACTER mosny FROM Blackrock ITEMS head TOOLTIP';
 echo '<pre>';
 print_r($cla->query);
 echo '</pre>';

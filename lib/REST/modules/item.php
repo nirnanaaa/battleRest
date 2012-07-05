@@ -43,5 +43,7 @@ class item {
         $characterContent = request::curlRequest($baseUrl);
         return json_decode($characterContent);
     }
+    public static function getAjaxItem(){}
+    
 
 }

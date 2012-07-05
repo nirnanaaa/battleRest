@@ -1,6 +1,7 @@
 <?php
 
-class character{
+class character {
+
     public static function getCharacter($baseUrl, $fields = null) {
         if ($fields != null) {
             $baseUrl .= '?fields=' . $fields;
@@ -20,8 +21,20 @@ class character{
         return self::getCharacter($baseUrl, "stats")->stats;
     }
 
-    public function items($baseUrl) {
-        return self::getCharacter($baseUrl, "items")->items;
+    public function items($baseUrl, $params = null, $tooltip = false) {
+        if ($params != null) {
+           
+            if (is_string($params)) {
+                if($tooltip){
+                    return kernel::tooltips();
+                }else{
+                return self::getCharacter($baseUrl, "items")->items->$params;
+                
+                }
+            }
+        } else {
+            return self::getCharacter($baseUrl, "items")->items;
+        }
     }
 
     public function guild($baseUrl) {

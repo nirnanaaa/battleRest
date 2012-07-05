@@ -87,4 +87,11 @@ class kernel {
             return false;
         }
     }
+    public static function jquery(){
+        return '<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>';
+    }
+    public static function tooltips(){
+        return '<script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script>';
+    }
+    
 }
