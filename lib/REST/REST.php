@@ -301,9 +301,12 @@ class REST {
     }
 
 }
-//tests
+
 $cla = new REST();
+$cla->extras = 'tooltips jquery';
+echo $cla->extras;
 $cla->query = 'CHARACTER mosny FROM Blackrock ITEMS head TOOLTIP';
-echo '<pre>';
+echo '<script type="text/javascript" src="http://static.wowhead.com/widgets/power.js"></script><pre>';
 print_r($cla->query);
+echo ' <a href="http://www.wowhead.com/item='.$cla->query->id.'" class="q'.$cla->query->quality.'" rel="gems='.$cla->query->tooltipParams->gem0.':'.$cla->query->tooltipParams->gem1.'&amp;ench='.$cla->query->tooltipParams->enchant.'&amp;pcs='.$cla->query->tooltipParams->set[0].':'.$cla->query->tooltipParams->set[1].':'.$cla->query->tooltipParams->set[2].':'.$cla->query->tooltipParams->set[3].'">['.$cla->query->name.']</a>';
 echo '</pre>';

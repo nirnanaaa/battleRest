@@ -51,7 +51,9 @@ class auth {
      */
     public static function signData($url) {
         //http://us.battle.net/api/wow/realm/status
-        $url = substr($url, 20);
+        if(preg_match("/https/i", strtolower($url)))$url = substr($url, 21);
+        else $url = substr($url, 20);
+        
         return base64_encode(hash_hmac('sha1', utf8_encode(kernel::Configuration("authenticationPrivateKey")), self::stringToSign($url)));
     }
 
